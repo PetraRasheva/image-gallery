@@ -1,6 +1,11 @@
 <?php
-include('includes/db.php');
 session_start();
+// If the user is already logged in, redirect them to the index page
+if (isset($_SESSION['user_id'])) {
+    header('Location: index.php');
+    exit();
+}
+include('includes/db.php');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];

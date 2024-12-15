@@ -11,7 +11,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                 <form id="deleteForm" method="POST" action="delete.php">
-                    <input type="hidden" name="id" id="deleteId">
+                    <input type="hidden" name="id" id="deleteId"> <!-- Hidden input for the image ID -->
                     <button type="submit" class="btn btn-outline-danger">Delete</button>
                 </form>
             </div>
