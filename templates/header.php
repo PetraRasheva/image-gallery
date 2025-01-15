@@ -14,6 +14,9 @@ session_start();
                         <span class="nav-link">Hello, <?= htmlspecialchars($_SESSION['user_name']) ?></span>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="profile.php">Profile</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="index.php">Gallery</a>
                     </li>
                     <li class="nav-item">

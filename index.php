@@ -1,5 +1,5 @@
 <?php
-include('modal.php');
+include('deleteModal.php');
 include('includes/db.php');
 session_start();
 
@@ -39,38 +39,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['image_id']) && isset(
     // Set success message and redirect to prevent form resubmission on refresh
     $_SESSION['success_message'] = 'Description updated successfully!';
     header("Location: index.php");  // Redirect back to index.php
-    exit();  // Ensure the script stops here
+    exit();
 }
 ?>
 <!DOCTYPE html>
-<?php include('modal.php'); ?><html lang="en">
+<?php include('deleteModal.php'); ?><html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Image Gallery</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
 
     <?php include('templates/header.php'); ?>
 
     <!-- Display Success Message -->
-    <?php if (isset($_SESSION['success_message'])): ?>
-        <div id="successMessage" style="display: block; position: fixed; top: 70px; right: 20px; padding: 10px 20px; font-size: 14px;">
-            <?= $_SESSION['success_message']; ?>
-        </div>
-        <?php unset($_SESSION['success_message']); // Clear the session message after showing it ?>
-    <?php endif; ?>
+    <div id="successMessageContainer" style="height: 50px; transition: height 0.2s;">
+        <?php if (isset($_SESSION['success_message'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" id="successMessage" role="alert">
+                <?= $_SESSION['success_message']; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php unset($_SESSION['success_message']); ?>
+        <?php endif; ?>
+    </div>
 
     <div class="container mt-5">
+        <div class="welcome-banner text-center p-4 mb-4 rounded" style="background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); color: white;">
+            <h1 class="display-4 fw-bold">Welcome to Your Image Gallery!</h1>
+            <p class="fs-5">A personal space to store, organize, and cherish your favorite moments.</p>
+        </div>
         <h1 class="text-center">Your Image Gallery</h1>
         <div class="row">
             <?php if (empty($images)): ?>
                 <div class="text-center mt-5">
-                    <div class="border p-4" style="border-radius: 8px;">
-                        <h4 class="fw-light">No Images Found</h4>
-                        <p class="mb-3">Your gallery is empty. Upload your first image to get started!</p>
-                        <a href="upload.php" class="btn btn-outline-dark btn-sm">Upload Image</a>
+                    <div class="p-5" style="border: 2px dashed #6c757d; border-radius: 10px; background-color: #f8f9fa;">
+                        <h4 class="fw-bold text-secondary mb-3">No Images Found</h4>
+                        <p class="text-muted mb-4">Your gallery is currently empty. Upload your first image to get started and showcase your memories!</p>
+                        <a href="upload.php" class="btn btn-secondary btn-lg">Upload Image</a>
                     </div>
                 </div>
             <?php else: ?>
@@ -80,39 +89,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['image_id']) && isset(
                             <img src="assets/uploads/<?= htmlspecialchars($image['image_name']) ?>" class="card-img-top" alt="Image">
                             <div class="card-body">
                                 <p class="card-text"><?= htmlspecialchars($image['description']) ?></p>
-                                <!-- Edit Button Triggering Modal -->
                                 <button class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $image['id'] ?>">Edit Description</button>
-                                
-                                <a href="#" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="setDeleteId(<?= $image['id'] ?>)">Delete</a>                                
+                                <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal<?= $image['id'] ?>">Delete</button>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Edit Modal for This Image -->
-                    <div class="modal fade" id="editModal<?= $image['id'] ?>" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="editModalLabel">Edit Image Description</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <!-- Form to Update Description -->
-                                <form method="POST" action="index.php">
-                                    <div class="modal-body">
-                                        <input type="hidden" name="image_id" value="<?= $image['id'] ?>">
-                                        <div class="mb-3">
-                                            <label for="description" class="form-label">Description</label>
-                                            <textarea name="description" id="description" class="form-control" rows="4" required><?= htmlspecialchars($image['description']) ?></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-outline-dark">Save Changes</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <?php include('editModal.php'); ?>
+                    <?php include('deleteModal.php'); ?>
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
@@ -126,15 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['image_id']) && isset(
         setTimeout(function() {
             var successMessage = document.getElementById('successMessage');
             if (successMessage) {
-                successMessage.style.display = 'none';
+                successMessage.classList.remove('show');
+                successMessage.classList.add('fade');
+                setTimeout(() => successMessage.remove(), 300); // Ensures it's fully removed after fade-out
             }
-        }, 3000);  // Hide after 3 seconds
+        }, 3000);
     </script>
-    <script>
-    function setDeleteId(imageId) {
-        // Set the image ID in the hidden input field of the modal
-        document.getElementById('deleteId').value = imageId;
-    }
-</script>
 </body>
+
 </html>

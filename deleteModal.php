@@ -1,4 +1,4 @@
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal<?= $image['id'] ?>" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -10,8 +10,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form id="deleteForm" method="POST" action="delete.php">
-                    <input type="hidden" name="id" id="deleteId"> <!-- Hidden input for the image ID -->
+                <form method="POST" action="index.php">
+                    <input type="hidden" name="id" value="<?= $image['id'] ?>"> 
                     <button type="submit" class="btn btn-outline-danger">Delete</button>
                 </form>
             </div>
